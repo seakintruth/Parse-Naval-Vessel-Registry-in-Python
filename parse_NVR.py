@@ -9,6 +9,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from time import sleep
+from random import randint as rand_between
 
 # pretend to be a browser:
 # https://stackoverflow.com/a/43590290
@@ -94,13 +95,15 @@ df_ship_detail = pd.DataFrame(columns = column_names, index = range(len(df_ship_
 df_ship_detail = df_ship_detail.astype(str)
 df_ship_names = df_ship_names.astype(str)
 count_url = 0
-for link_url in urls:
+for link_url in urls[:2]:
     r_url = requests.get(link_url, headers=header)
+    ship_name = df_ship_names.iloc[count_url]['Name']
+    ship_hull = df_ship_names.iloc[count_url]['Name']
     try:
         table_ship = pd.read_html(r_url.text) #, flavor='bs4')
         df_table_ship = pd.DataFrame(table_ship,dtype=object)
-        df_ship_detail.loc[count_url]['Hull'] = df_ship_names.iloc[count_url]['Hull']
-        df_ship_detail.loc[count_url]['Name'] = df_ship_names.iloc[count_url]['Name']
+        df_ship_detail.loc[count_url]['Hull'] = ship_name
+        df_ship_detail.loc[count_url]['Name'] = ship_hull
         df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
         df_ship_detail.loc[count_url]['Ship Alt Title'] = table_ship[2][1][1]
         df_ship_detail.loc[count_url]['Ship Type'] = table_ship[2][1][2]
@@ -145,8 +148,14 @@ for link_url in urls:
         df_ship_detail.loc[count_url]['Ships Program Manager'] = table_ship[2][4][40]
         df_ship_detail.loc[count_url]['Comments'] = table_ship[2][4][41]
         df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
-    except:
-        print(f("Error while reading page for" + df_ship_names.iloc[count_url]['Hull'] + ' - ' + df_ship_names.iloc[count_url]['Name']))
-    count_url+=1
-    sleep(0.5) # to reduce server load add a 500 ms pause between each url call
+    except Exception as e:
+        f_error = open('NVR_Error.csv','a')
+        f_error.write(
+            f'"{str(pd.Timestamp.utcnow().asm8)}",'+
+            f'"Error while reading page for: {ship_hull} ({ship_name})",'+
+            f'"{str(e)}"\n'
+        )
+        f_error.close()
+    count_url+=1    
+    sleep(rand_between(50,800)/1000) # being polite to the web server
     df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
