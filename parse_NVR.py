@@ -149,5 +149,4 @@ for link_url in urls:
     df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
     count_url+=1
     sleep(0.5) # to reduce server load add a 500 ms pause between each url call
-
-df_ship_detail.to_csv("NVR_Dataset",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
+    df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
