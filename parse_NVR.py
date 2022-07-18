@@ -95,13 +95,12 @@ df_ship_detail = pd.DataFrame(columns = column_names, index = range(len(df_ship_
 df_ship_detail = df_ship_detail.astype(str)
 df_ship_names = df_ship_names.astype(str)
 count_url = 0
-for link_url in urls[]:
+for link_url in urls:
     r_url = requests.get(link_url, headers=header)
     ship_name = df_ship_names.iloc[count_url]['Name']
-    ship_hull = df_ship_names.iloc[count_url]['Name']
+    ship_hull = df_ship_names.iloc[count_url]['Hull']
     try:
         table_ship = pd.read_html(r_url.text) #, flavor='bs4')
-        df_table_ship = pd.DataFrame(table_ship,dtype=object)
         df_ship_detail.loc[count_url]['Hull'] = ship_name
         df_ship_detail.loc[count_url]['Name'] = ship_hull
         df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
