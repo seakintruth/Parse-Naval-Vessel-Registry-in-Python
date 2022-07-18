@@ -47,7 +47,7 @@ column_names = [
     "Name",
     "Name (Hull)", 
     "Ship Alt Title",
-    "Ship Type"
+    "Ship Type",
     "Class", 
     "UIC",
     "Status",
@@ -97,13 +97,11 @@ df_ship_names = df_ship_names.astype(str)
 count_url = 0
 for link_url in urls:
     r_url = requests.get(link_url, headers=header)
-    # Parsing values will use a combination of finding by ID, and selecting a table in order
-    soup = BeautifulSoup(r_url.text, 'html.parser') 
     table_ship = pd.read_html(r_url.text) #, flavor='bs4')
     df_table_ship = pd.DataFrame(table_ship,dtype=object)
     df_ship_detail.loc[count_url]['Hull'] = df_ship_names.iloc[count_url]['Hull']
     df_ship_detail.loc[count_url]['Name'] = df_ship_names.iloc[count_url]['Name']
-    df_ship_detail.loc[count_url]['Name (Hull)'] = soup.find('title').contents
+    df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
     df_ship_detail.loc[count_url]['Ship Alt Title'] = table_ship[2][1][1]
     df_ship_detail.loc[count_url]['Ship Type'] = table_ship[2][1][2]
     df_ship_detail.loc[count_url]['Class'] = table_ship[2][2][6]
