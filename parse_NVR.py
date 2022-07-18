@@ -95,7 +95,7 @@ df_ship_detail = pd.DataFrame(columns = column_names, index = range(len(df_ship_
 df_ship_detail = df_ship_detail.astype(str)
 df_ship_names = df_ship_names.astype(str)
 count_url = 0
-for link_url in urls[:2]:
+for link_url in urls[]:
     r_url = requests.get(link_url, headers=header)
     ship_name = df_ship_names.iloc[count_url]['Name']
     ship_hull = df_ship_names.iloc[count_url]['Name']
@@ -152,7 +152,7 @@ for link_url in urls[:2]:
         f_error = open('NVR_Error.csv','a')
         f_error.write(
             f'"{str(pd.Timestamp.utcnow().asm8)}",'+
-            f'"Error while reading page for: {ship_hull} ({ship_name})",'+
+            f'"Error on ship count of {count_url} at page for {ship_hull} ({ship_name})",'+
             f'"{str(e)}"\n'
         )
         f_error.close()
