@@ -11,6 +11,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from time import sleep
 from random import randint as rand_between
+from pathlib import Path
 
 # pretend to be a browser:
 # https://stackoverflow.com/a/43590290
@@ -149,17 +150,28 @@ for link_url in urls:
         df_ship_detail.loc[count_url]['Comments'] = table_ship[2][4][41]
         df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
     except Exception as e:
-        f_error = open('NVR_Error.csv','a')
-        f_error.write(
-            f'"{str(pd.Timestamp.utcnow().asm8)}",'+
-            f'"Error on ship count of {count_url} at page for {ship_hull} ({ship_name})",'+
-            f'"{str(e)}"\n'
-        )
-        f_error.close()
+        try:
+            f_error = open('NVR_Error.csv','a')
+            f_error.write(
+                f'"{str(pd.Timestamp.utcnow().asm8)}",'+
+                f'"{count_url}",'+
+                f'"{ship_hull}",'+
+                f'"{ship_name}"\n'
+            )
+            f_error.close()
+        except Exception:
+            # If an error occurs in the error handler, ignore this error
+            pass
     count_url+=1    
-    sleep(rand_between(50,800)/1000) # being polite to the web server
-    df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
+    sleep(rand_between(250,3800)/1000) # being polite to the web server
+    if count_url % 25 == 0 :    
+        # Write the results to a draft file every 25 pages - capture progress
+        df_ship_detail[:count_url].to_csv("NVR_Dataset_Draft.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
 
-
-# Write the full data frame to a feather file
+# Write results when completed 
+df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
 df_ship_detail.to_feather("NVR_Dataset.feather")
+
+# Delete the draft files
+(Path.cwd() / 'NVR_Dataset_Draft.csv').unlink(missing_ok=True)
+(Path.cwd() / 'NVR_Dataset_Draft.feather').unlink(missing_ok=True)
