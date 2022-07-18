@@ -1,38 +1,26 @@
 # prerequisits are:
+# pip install pandas bs4 lxml pyarrrow
 # pip install ...hml5?
-# pip install bs4
-# pip install lxml
-# pip install pyarrrow
 
-# following a walk through for scraping an html table to a data frame
-# https://pbpython.com/pandas-html-table.html
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from time import sleep
 from random import randint as rand_between
 from pathlib import Path
-
-# pretend to be a browser:
-# https://stackoverflow.com/a/43590290
-url = 'http://www.nvr.navy.mil/QUICKFIND/SHIPSDETAIL_HULLBYNAME_ALL.HTML'
+# pretend to be a browser: https://stackoverflow.com/a/43590290
+url = 'https://www.nvr.navy.mil/QUICKFIND/SHIPSDETAIL_HULLBYNAME_ALL.HTML'
 header = {
-  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
-  "X-Requested-With": "XMLHttpRequest"
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36',
+    'X-Requested-With': 'XMLHttpRequest'
 }
-r = requests.get(url, headers=header)
 
+s = requests.session()
+r = s.get(url, stream=True, headers=header) 
 # get the list of all ships by hull name
-table_NVR = pd.read_html(
-    r.text,
-    flavor='bs4'
-)
-
+table_NVR = pd.read_html(r.text, flavor='bs4')
 df_ship_names = pd.DataFrame(table_NVR[1][[0,1]][3:])
 df_ship_names.columns = ["Hull","Name"]
-
-print(df_ship_names.head())
-print(df_ship_names.shape)
 
 # Get the list of all URLS
 soup = BeautifulSoup(r.text, 'html.parser') 
@@ -41,7 +29,9 @@ for link in soup.find_all('a'):
     data = link.get('href')
     id_value = link.get('id')
     if id_value == 'MainContent_rptr1_HullLink_0':
-        urls.append('http://www.nvr.navy.mil/SHIPDETAILS/' + data[15:])
+        urls.append('https://www.nvr.navy.mil/SHIPDETAILS/' + data[15:])
+r.close()
+s.close()
 
 # columns for the main dataframe
 column_names = [
@@ -92,17 +82,23 @@ column_names = [
     "Comments",
     "Last Updated"
 ]
+
 df_ship_detail = pd.DataFrame(columns = column_names, index = range(len(df_ship_names)))
 # set data frame values to strings
 df_ship_detail = df_ship_detail.astype(str)
 df_ship_names = df_ship_names.astype(str)
 count_url = 0
+sleep(rand_between(500,15000)/1500) # being polite to the web server .5 to 1.5 seconds between calls
+
 for link_url in urls:
-    r_url = requests.get(link_url, headers=header)
-    ship_name = df_ship_names.iloc[count_url]['Name']
-    ship_hull = df_ship_names.iloc[count_url]['Hull']
     try:
+        s = requests.session()
+        r_url = s.get(link_url, stream=True, headers=header) 
         table_ship = pd.read_html(r_url.text) #, flavor='bs4')
+        r_url.close()
+        s.close()
+        ship_name = df_ship_names.iloc[count_url]['Name']
+        ship_hull = df_ship_names.iloc[count_url]['Hull']
         df_ship_detail.loc[count_url]['Hull'] = ship_hull
         df_ship_detail.loc[count_url]['Name'] = ship_name
         df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
@@ -151,19 +147,24 @@ for link_url in urls:
         df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
     except Exception as e:
         try:
+            header_line = ''
+            if (Path.cwd() / 'NVR_Error.csv').is_file:
+                header_line = '"Timestamp","Page Number","Hull","Name","URL"\n'
             f_error = open('NVR_Error.csv','a')
-            f_error.write(
+            f_error.write( header_line +
                 f'"{str(pd.Timestamp.utcnow().asm8)}",'+
                 f'"{count_url}",'+
                 f'"{ship_hull}",'+
-                f'"{ship_name}"\n'
+                f'"{ship_name}",'+
+                f'{link_url}\n'
             )
             f_error.close()
         except Exception:
             # If an error occurs in the error handler, ignore this error
             pass
+
     count_url+=1    
-    sleep(rand_between(250,3800)/1000) # being polite to the web server
+    sleep(rand_between(500,1500)/1000) # being polite to the web server .5 to 1.5 seconds between calls
     if count_url % 25 == 0 :    
         # Write the results to a draft file every 25 pages - capture progress
         df_ship_detail[:count_url].to_csv("NVR_Dataset_Draft.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
@@ -173,5 +174,12 @@ df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_labe
 df_ship_detail.to_feather("NVR_Dataset.feather")
 
 # Delete the draft files
-(Path.cwd() / 'NVR_Dataset_Draft.csv').unlink(missing_ok=True)
-(Path.cwd() / 'NVR_Dataset_Draft.feather').unlink(missing_ok=True)
+path_cwd = Path.cwd()
+path_draft_csv = (path_cwd  / 'NVR_Dataset_Draft.csv')
+
+if path_draft_csv.is_file() == True:
+    path_draft_csv.unlink() # missing_ok=True)
+
+path_draft_feather = (path_cwd  / 'NVR_Dataset_Draft.feather')
+if path_draft_feather.is_file() == True:
+    path_draft_feather.unlink() # missing_ok=True)
