@@ -1,15 +1,14 @@
+# prerequisits are:
+# pip install ...
+# pip install bs4
+# pip install lxml
+
 # following a walk through for scraping an html table to a data frame
 # https://pbpython.com/pandas-html-table.html
-from numpy import int_
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from time import sleep
-
-#import numpy as np
-#import matplotlib.pyplot as plt
-#from unicodedata import normalize
-
 
 # pretend to be a browser:
 # https://stackoverflow.com/a/43590290
@@ -97,54 +96,57 @@ df_ship_names = df_ship_names.astype(str)
 count_url = 0
 for link_url in urls:
     r_url = requests.get(link_url, headers=header)
-    table_ship = pd.read_html(r_url.text) #, flavor='bs4')
-    df_table_ship = pd.DataFrame(table_ship,dtype=object)
-    df_ship_detail.loc[count_url]['Hull'] = df_ship_names.iloc[count_url]['Hull']
-    df_ship_detail.loc[count_url]['Name'] = df_ship_names.iloc[count_url]['Name']
-    df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
-    df_ship_detail.loc[count_url]['Ship Alt Title'] = table_ship[2][1][1]
-    df_ship_detail.loc[count_url]['Ship Type'] = table_ship[2][1][2]
-    df_ship_detail.loc[count_url]['Class'] = table_ship[2][2][6]
-    df_ship_detail.loc[count_url]['UIC'] = table_ship[2][8][6]
-    df_ship_detail.loc[count_url]['Status'] = table_ship[2][2][7]
-    df_ship_detail.loc[count_url]['Fleet'] = table_ship[2][8][7]
-    df_ship_detail.loc[count_url]['Date Status Last Changed'] = table_ship[2][2][8]
-    df_ship_detail.loc[count_url]['Homeport'] = table_ship[2][8][8]
-    df_ship_detail.loc[count_url]['Maintenance Category'] =  table_ship[2][2][9]
-    df_ship_detail.loc[count_url]['Berth'] = table_ship[2][8][9]
-    df_ship_detail.loc[count_url]['Force'] =  table_ship[2][2][10]
-    df_ship_detail.loc[count_url]['Builder'] =   table_ship[2][2][11]
-    df_ship_detail.loc[count_url]['Award Date'] = table_ship[2][2][14]
-    df_ship_detail.loc[count_url]['Commission Date'] = table_ship[2][8][14]
-    df_ship_detail.loc[count_url]['Keel Date'] = table_ship[2][2][15]
-    df_ship_detail.loc[count_url]['Inactivation Date'] = table_ship[2][8][15]
-    df_ship_detail.loc[count_url]['Launch Date'] = table_ship[2][2][16]
-    df_ship_detail.loc[count_url]['Decommission Date'] = table_ship[2][8][16]
-    df_ship_detail.loc[count_url]['Delivery Date'] = table_ship[2][2][18]
-    df_ship_detail.loc[count_url]['InService Date'] = table_ship[2][8][18]
-    df_ship_detail.loc[count_url]['Out Service Date'] = table_ship[2][8][19]
-    df_ship_detail.loc[count_url]['Stricken Date'] = table_ship[2][8][20]
-    df_ship_detail.loc[count_url]['Overall Length'] = table_ship[2][2][24]
-    df_ship_detail.loc[count_url]['Waterline Length'] = table_ship[2][8][24]
-    df_ship_detail.loc[count_url]['Extreme Beam'] = table_ship[2][2][25]
-    df_ship_detail.loc[count_url]['Waterline Beam'] =  table_ship[2][8][25]
-    df_ship_detail.loc[count_url]['Max Navigational Draft'] = table_ship[2][2][26]
-    df_ship_detail.loc[count_url]['Draft Limit'] =  table_ship[2][8][26]
-    df_ship_detail.loc[count_url]['Light Displacement'] = table_ship[2][2][27]
-    df_ship_detail.loc[count_url]['Full Displacement'] = table_ship[2][8][27]
-    df_ship_detail.loc[count_url]['Dead Weight'] = table_ship[2][2][28]
-    df_ship_detail.loc[count_url]['Hull Material'] =  table_ship[2][3][29]
-    df_ship_detail.loc[count_url]['No. of Propellers'] = table_ship[2][2][30]
-    df_ship_detail.loc[count_url]['No. of Waterjets'] = table_ship[2][3][31]
-    df_ship_detail.loc[count_url]['Propulsion Type'] = table_ship[2][3][32]
-    df_ship_detail.loc[count_url]['Accommodations Officers'] =  table_ship[2][5][33]
-    df_ship_detail.loc[count_url]['Accommodations Enlisted'] = table_ship[2][5][34]
-    df_ship_detail.loc[count_url]['Custodian'] = table_ship[2][4][37]
-    df_ship_detail.loc[count_url]['Planning Yard'] = table_ship[2][4][38]
-    df_ship_detail.loc[count_url]['Nuclear Planning Yard'] = table_ship[2][4][39]
-    df_ship_detail.loc[count_url]['Ships Program Manager'] = table_ship[2][4][40]
-    df_ship_detail.loc[count_url]['Comments'] = table_ship[2][4][41]
-    df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
+    try:
+        table_ship = pd.read_html(r_url.text) #, flavor='bs4')
+        df_table_ship = pd.DataFrame(table_ship,dtype=object)
+        df_ship_detail.loc[count_url]['Hull'] = df_ship_names.iloc[count_url]['Hull']
+        df_ship_detail.loc[count_url]['Name'] = df_ship_names.iloc[count_url]['Name']
+        df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
+        df_ship_detail.loc[count_url]['Ship Alt Title'] = table_ship[2][1][1]
+        df_ship_detail.loc[count_url]['Ship Type'] = table_ship[2][1][2]
+        df_ship_detail.loc[count_url]['Class'] = table_ship[2][2][6]
+        df_ship_detail.loc[count_url]['UIC'] = table_ship[2][8][6]
+        df_ship_detail.loc[count_url]['Status'] = table_ship[2][2][7]
+        df_ship_detail.loc[count_url]['Fleet'] = table_ship[2][8][7]
+        df_ship_detail.loc[count_url]['Date Status Last Changed'] = table_ship[2][2][8]
+        df_ship_detail.loc[count_url]['Homeport'] = table_ship[2][8][8]
+        df_ship_detail.loc[count_url]['Maintenance Category'] =  table_ship[2][2][9]
+        df_ship_detail.loc[count_url]['Berth'] = table_ship[2][8][9]
+        df_ship_detail.loc[count_url]['Force'] =  table_ship[2][2][10]
+        df_ship_detail.loc[count_url]['Builder'] =   table_ship[2][2][11]
+        df_ship_detail.loc[count_url]['Award Date'] = table_ship[2][2][14]
+        df_ship_detail.loc[count_url]['Commission Date'] = table_ship[2][8][14]
+        df_ship_detail.loc[count_url]['Keel Date'] = table_ship[2][2][15]
+        df_ship_detail.loc[count_url]['Inactivation Date'] = table_ship[2][8][15]
+        df_ship_detail.loc[count_url]['Launch Date'] = table_ship[2][2][16]
+        df_ship_detail.loc[count_url]['Decommission Date'] = table_ship[2][8][16]
+        df_ship_detail.loc[count_url]['Delivery Date'] = table_ship[2][2][18]
+        df_ship_detail.loc[count_url]['InService Date'] = table_ship[2][8][18]
+        df_ship_detail.loc[count_url]['Out Service Date'] = table_ship[2][8][19]
+        df_ship_detail.loc[count_url]['Stricken Date'] = table_ship[2][8][20]
+        df_ship_detail.loc[count_url]['Overall Length'] = table_ship[2][2][24]
+        df_ship_detail.loc[count_url]['Waterline Length'] = table_ship[2][8][24]
+        df_ship_detail.loc[count_url]['Extreme Beam'] = table_ship[2][2][25]
+        df_ship_detail.loc[count_url]['Waterline Beam'] =  table_ship[2][8][25]
+        df_ship_detail.loc[count_url]['Max Navigational Draft'] = table_ship[2][2][26]
+        df_ship_detail.loc[count_url]['Draft Limit'] =  table_ship[2][8][26]
+        df_ship_detail.loc[count_url]['Light Displacement'] = table_ship[2][2][27]
+        df_ship_detail.loc[count_url]['Full Displacement'] = table_ship[2][8][27]
+        df_ship_detail.loc[count_url]['Dead Weight'] = table_ship[2][2][28]
+        df_ship_detail.loc[count_url]['Hull Material'] =  table_ship[2][3][29]
+        df_ship_detail.loc[count_url]['No. of Propellers'] = table_ship[2][2][30]
+        df_ship_detail.loc[count_url]['No. of Waterjets'] = table_ship[2][3][31]
+        df_ship_detail.loc[count_url]['Propulsion Type'] = table_ship[2][3][32]
+        df_ship_detail.loc[count_url]['Accommodations Officers'] =  table_ship[2][5][33]
+        df_ship_detail.loc[count_url]['Accommodations Enlisted'] = table_ship[2][5][34]
+        df_ship_detail.loc[count_url]['Custodian'] = table_ship[2][4][37]
+        df_ship_detail.loc[count_url]['Planning Yard'] = table_ship[2][4][38]
+        df_ship_detail.loc[count_url]['Nuclear Planning Yard'] = table_ship[2][4][39]
+        df_ship_detail.loc[count_url]['Ships Program Manager'] = table_ship[2][4][40]
+        df_ship_detail.loc[count_url]['Comments'] = table_ship[2][4][41]
+        df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
+    except:
+        print(f("Error while reading page for" + df_ship_names.iloc[count_url]['Hull'] + ' - ' + df_ship_names.iloc[count_url]['Name']))
     count_url+=1
     sleep(0.5) # to reduce server load add a 500 ms pause between each url call
     df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
