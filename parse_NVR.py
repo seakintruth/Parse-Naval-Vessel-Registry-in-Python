@@ -1,7 +1,8 @@
 # prerequisits are:
-# pip install ...
+# pip install ...hml5?
 # pip install bs4
 # pip install lxml
+# pip install pyarrrow
 
 # following a walk through for scraping an html table to a data frame
 # https://pbpython.com/pandas-html-table.html
@@ -101,8 +102,8 @@ for link_url in urls:
     ship_hull = df_ship_names.iloc[count_url]['Hull']
     try:
         table_ship = pd.read_html(r_url.text) #, flavor='bs4')
-        df_ship_detail.loc[count_url]['Hull'] = ship_name
-        df_ship_detail.loc[count_url]['Name'] = ship_hull
+        df_ship_detail.loc[count_url]['Hull'] = ship_hull
+        df_ship_detail.loc[count_url]['Name'] = ship_name
         df_ship_detail.loc[count_url]['Name (Hull)'] =  table_ship[2][1][0]
         df_ship_detail.loc[count_url]['Ship Alt Title'] = table_ship[2][1][1]
         df_ship_detail.loc[count_url]['Ship Type'] = table_ship[2][1][2]
@@ -158,3 +159,7 @@ for link_url in urls:
     count_url+=1    
     sleep(rand_between(50,800)/1000) # being polite to the web server
     df_ship_detail.to_csv("NVR_Dataset.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
+
+
+# Write the full data frame to a feather file
+df_ship_detail.to_feather("NVR_Dataset.feather")
