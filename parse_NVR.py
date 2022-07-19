@@ -1,6 +1,6 @@
 # prerequisits are:
 # pip install pandas bs4 lxml pyarrrow
-# pip install ...hml5?
+# maybe ... pip install hml5lib ...?
 
 import requests
 import pandas as pd
@@ -88,7 +88,7 @@ df_ship_detail = pd.DataFrame(columns = column_names, index = range(len(df_ship_
 df_ship_detail = df_ship_detail.astype(str)
 df_ship_names = df_ship_names.astype(str)
 count_url = 0
-sleep(rand_between(500,15000)/1500) # being polite to the web server .5 to 1.5 seconds between calls
+sleep(rand_between(1500,3000)/1500) # being polite to the web server 1 to 3 seconds between calls
 
 for link_url in urls:
     try:
