@@ -88,7 +88,7 @@ df_ship_detail = pd.DataFrame(columns = column_names, index = range(len(df_ship_
 df_ship_detail = df_ship_detail.astype(str)
 df_ship_names = df_ship_names.astype(str)
 count_url = 0
-sleep(rand_between(1500,3000)/1500) # being polite to the web server 1 to 3 seconds between calls
+sleep(rand_between(500,1500)/1000) # being polite to the web server 0.5 to 1.5 seconds between calls
 
 for link_url in urls:
     try:
@@ -164,7 +164,7 @@ for link_url in urls:
             pass
 
     count_url+=1    
-    sleep(rand_between(500,1500)/1000) # being polite to the web server .5 to 1.5 seconds between calls
+    sleep(rand_between(500,1500)/1000) # being polite to the web server 0.5 to 1.5 seconds between calls should take roughly 1.3 hours to run
     if count_url % 25 == 0 :    
         # Write the results to a draft file every 25 pages - capture progress
         df_ship_detail[:count_url].to_csv("NVR_Dataset_Draft.csv",sep=',',na_rep='',index=False,index_label=False,quoting=1,quotechar='"')
