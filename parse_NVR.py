@@ -147,8 +147,9 @@ for link_url in urls:
         df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
     except Exception as e:
         try:
-            header_line = ''
             if (Path.cwd() / 'NVR_Error.csv').is_file:
+                header_line = ''
+            else:
                 header_line = '"Timestamp","Page Number","Hull","Name","URL"\n'
             f_error = open('NVR_Error.csv','a')
             f_error.write( header_line +
