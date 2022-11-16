@@ -147,9 +147,14 @@ for link_url in urls:
         df_ship_detail.loc[count_url]['Last Updated'] = table_ship[2][4][42]
     except Exception as e:
         try:
+<<<<<<< HEAD
             if (Path.cwd() / 'NVR_Error.csv').is_file:
                 header_line = ''
             else:
+=======
+            header_line = ''
+            if (Path.cwd() / 'NVR_Error.csv').is_file:
+>>>>>>> e127ac923851bbb8a92120dadc79a5c3d81e1c73
                 header_line = '"Timestamp","Page Number","Hull","Name","URL"\n'
             f_error = open('NVR_Error.csv','a')
             f_error.write( header_line +
@@ -183,4 +188,8 @@ if path_draft_csv.is_file() == True:
 
 path_draft_feather = (path_cwd  / 'NVR_Dataset_Draft.feather')
 if path_draft_feather.is_file() == True:
+<<<<<<< HEAD
     path_draft_feather.unlink() # missing_ok=True)
+=======
+    path_draft_feather.unlink() # missing_ok=True)
+>>>>>>> e127ac923851bbb8a92120dadc79a5c3d81e1c73
