@@ -188,8 +188,4 @@ if path_draft_csv.is_file() == True:
 
 path_draft_feather = (path_cwd  / 'NVR_Dataset_Draft.feather')
 if path_draft_feather.is_file() == True:
-<<<<<<< HEAD
     path_draft_feather.unlink() # missing_ok=True)
-=======
-    path_draft_feather.unlink() # missing_ok=True)
->>>>>>> e127ac923851bbb8a92120dadc79a5c3d81e1c73
